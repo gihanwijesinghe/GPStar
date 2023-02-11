@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GPStarAPI.Data;
-using GPStarAPI.Models;
-using GPStarAPI.Systems;
 using GPStarAPI.ApiModels;
+using GPStarAPI.Invoices;
+using GPStarAPI.Models;
 
-namespace GPStarAPI
+namespace GPStarAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

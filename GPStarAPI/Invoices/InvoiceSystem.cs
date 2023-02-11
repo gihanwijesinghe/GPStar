@@ -3,15 +3,17 @@ using GPStarAPI.Data;
 using GPStarAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace GPStarAPI.Systems
+namespace GPStarAPI.Invoices
 {
     public class InvoiceSystem
     {
         private readonly GPStarContext _context;
+        private readonly InvoiceValidator _invoiceValidator;
 
-        public InvoiceSystem(GPStarContext context)
+        public InvoiceSystem(GPStarContext context, InvoiceValidator invoiceValidator)
         {
             _context = context;
+            _invoiceValidator = invoiceValidator;
         }
 
         public async Task<InvoiceGet> GetInvoiceById(Guid invoiceId)
@@ -42,7 +44,7 @@ namespace GPStarAPI.Systems
 
         public async Task<Guid> CreateInvoice(InvoicePost invoicePost)
         {
-            var invoiceDb = new Invoice
+            var invoiceDb = new Models.Invoice
             {
                 Date = invoicePost.Date,
                 TotalAmount = invoicePost.TotalAmount,
@@ -72,10 +74,7 @@ namespace GPStarAPI.Systems
         {
             var invoiceDb = await _context.Invoices.FirstOrDefaultAsync(invoice => invoice.Id == invoiceId);
 
-            if(invoiceDb == null)
-            {
-                throw new Exception("invoice not found");
-            }
+            _invoiceValidator.Validate(invoiceDb, invoicePut);
 
             invoiceDb.TotalAmount = invoicePut.TotalAmount;
             invoiceDb.Date = invoicePut.Date;

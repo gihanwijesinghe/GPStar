@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using GPStarAPI.Data;
 using System.Text.Json.Serialization;
-using GPStarAPI.Systems;
+using GPStarAPI.Invoices;
 
 var builder = WebApplication.CreateBuilder(args);
-//builder.Services.AddDbContext<GPStarAPIContext>(options =>
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("GPStarAPIContext") ?? throw new InvalidOperationException("Connection string 'GPStarAPIContext' not found.")));
+// Add services to the container.
+
 
 builder.Services.AddDbContext<GPStarContext>(options =>
     options.UseCosmos(builder.Configuration["CosmosDBGPStar"],
@@ -14,8 +14,9 @@ builder.Services.AddDbContext<GPStarContext>(options =>
 builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 builder.Services.AddTransient<InvoiceSystem>();
+builder.Services.AddTransient<InvoiceValidator>();
 
-// Add services to the container.
+
 
 //builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
