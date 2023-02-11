@@ -13,11 +13,12 @@
 
     public class InvoicePut : InvoicePostBase
     {
+        public Guid Id { get; set; }
         public IEnumerable<InvoiceLinePut> InvoiceLinePuts { get; set; }
     }
 
     public class InvoiceGet : InvoicePut
     {
-        public Guid Id { get; set; }
+        
     }
 }

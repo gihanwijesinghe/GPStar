@@ -44,32 +44,16 @@ namespace GPStarAPI
         // PUT: api/Invoices/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutInvoice(Guid id, Invoice invoice)
+        public async Task<IActionResult> PutInvoice(Guid id, InvoicePut invoicePut)
         {
-            if (id != invoice.Id)
+            if (id != invoicePut.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(invoice).State = EntityState.Modified;
+            await _invoiceSystem.UpdateInvoice(id, invoicePut);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!InvoiceExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return Ok(id);
         }
 
         // POST: api/Invoices
@@ -80,11 +64,6 @@ namespace GPStarAPI
             var id = await _invoiceSystem.CreateInvoice(invoicePost);
 
             return CreatedAtAction("GetInvoice", new { id = id }, id);
-        }
-
-        private bool InvoiceExists(Guid id)
-        {
-            return _context.Invoices.Any(e => e.Id == id);
         }
     }
 }

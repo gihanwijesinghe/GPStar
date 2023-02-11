@@ -1,4 +1,6 @@
-﻿namespace GPStarAPI.ApiModels
+﻿using GPStarAPI.Models;
+
+namespace GPStarAPI.ApiModels
 {
     public class InvoiceLinePost
     {
@@ -10,7 +12,7 @@
 
     public class InvoiceLinePut : InvoiceLinePost
     {
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
     }
 
     public class InvoiceLineGet : InvoiceLinePut
