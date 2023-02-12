@@ -1,9 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using GPStarAPI.Invoices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using GPStarAPI.Models;
 using GPStarAPI.ApiModels;
@@ -100,6 +98,39 @@ namespace GPStarAPI.Invoices.Tests
             var result = validator.Validate(new Invoice { }, new InvoicePut { InvoiceLinePuts = linePuts }, dblines);
 
             Assert.AreEqual(result.Errors[0].Message, "duplicate put lines exists");
+        }
+
+        public void ValidatePutLineTotalWithInvoiceSum()
+        {
+
+            var validator = new InvoiceValidator();
+
+            var linePuts = new List<ApiModels.InvoiceLinePut>()
+            {
+                new InvoiceLinePut { LinePrice = 100 },
+                new InvoiceLinePut { LinePrice = 300 },
+            };
+
+            var result = validator.Validate(new Invoice { }, new InvoicePut { InvoiceLinePuts = linePuts }, null);
+
+            Assert.AreEqual(result.Errors[0].Message, "Line total not equal to invoice sum");
+        }
+
+        public void ValidateIndividualPutLineTotalWithUnitPriceAndQuantity()
+        {
+            var validator = new InvoiceValidator();
+
+            var linePuts = new List<ApiModels.InvoiceLinePut>()
+            {
+                new InvoiceLinePut { LinePrice = 100, Quantity = 2, UnitPrice = 100, Name = "Line 1" },
+                new InvoiceLinePut { LinePrice = 300, Quantity = 3, UnitPrice = 50, Name = "line 2" },
+            };
+
+            var expectedErrorMessage = string.Join(", ", linePuts.Select(linePut => linePut.Name + " line sum not aligned with quatity and unit Price"));
+            var result = validator.Validate(new Invoice { }, new InvoicePut { InvoiceLinePuts = linePuts }, null);
+            var errorMessage = string.Join(", ", result.Errors);
+
+            Assert.AreEqual(expectedErrorMessage, errorMessage);
         }
 
         [TestMethod()]

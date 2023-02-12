@@ -69,7 +69,7 @@ namespace GPStarAPI.Controllers
                 return Ok(result.Data);
             }
 
-            var errors = string.Join(",", result.Errors.Select(e => e.Message));
+            var errors = string.Join(", ", result.Errors.Select(e => e.Message));
             if (result.ErrorType != null)
             {
                 switch (result.ErrorType)
