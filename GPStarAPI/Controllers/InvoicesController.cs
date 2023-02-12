@@ -48,11 +48,6 @@ namespace GPStarAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutInvoice(Guid id, InvoicePut invoicePut)
         {
-            if (id != invoicePut.Id)
-            {
-                return BadRequest();
-            }
-
             var result = await _invoiceSystem.UpdateInvoice(id, invoicePut);
             return ApiResult(result);
         }

@@ -1,5 +1,6 @@
 ﻿using GPStarAPI.ApiModels;
 using GPStarAPI.Data;
+using GPStarAPI.Errors;
 using GPStarAPI.Helpers;
 using GPStarAPI.Models;
 using Microsoft.EntityFrameworkCore;
@@ -73,8 +74,15 @@ namespace GPStarAPI.Invoices
 
         public async Task<AppResult<Guid>> UpdateInvoice(Guid invoiceId, InvoicePut invoicePut)
         {
-            var invoiceDb = await _context.Invoices.FirstOrDefaultAsync(invoice => invoice.Id == invoiceId);
+            if (invoiceId != invoicePut.Id)
+            {
+                return AppResult<Guid>.Fail(new ErrorModel { 
+                    Message = "invoice route id and modal id not equal", 
+                    ErrorType = ErrorType.ArgumentException 
+                });
+            }
 
+            var invoiceDb = await _context.Invoices.FirstOrDefaultAsync(invoice => invoice.Id == invoiceId);
             var result = _invoiceValidator.Validate(invoiceDb, invoicePut);
 
             if (!result.Result)
