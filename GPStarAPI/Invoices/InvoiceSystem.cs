@@ -1,5 +1,6 @@
 ﻿using GPStarAPI.ApiModels;
 using GPStarAPI.Data;
+using GPStarAPI.Helpers;
 using GPStarAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -70,11 +71,16 @@ namespace GPStarAPI.Invoices
             }
         }
 
-        public async Task<Guid> UpdateInvoice(Guid invoiceId, InvoicePut invoicePut)
+        public async Task<AppResult<Guid>> UpdateInvoice(Guid invoiceId, InvoicePut invoicePut)
         {
             var invoiceDb = await _context.Invoices.FirstOrDefaultAsync(invoice => invoice.Id == invoiceId);
 
-            _invoiceValidator.Validate(invoiceDb, invoicePut);
+            var result = _invoiceValidator.Validate(invoiceDb, invoicePut);
+
+            if (!result.Result)
+            {
+                return result;
+            }
 
             invoiceDb.TotalAmount = invoicePut.TotalAmount;
             invoiceDb.Date = invoicePut.Date;
@@ -92,7 +98,7 @@ namespace GPStarAPI.Invoices
                 throw new Exception("data base update issue");
             }
 
-            return invoiceId;
+            return AppResult<Guid>.Value(invoiceId);
         }
 
         private IList<InvoiceLine> MergeInvoiceLines(Guid invoiceId, List<InvoiceLine> invoiceDbLines, InvoicePut invoicePut)

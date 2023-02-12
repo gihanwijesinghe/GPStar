@@ -4,6 +4,8 @@ using GPStarAPI.Data;
 using GPStarAPI.ApiModels;
 using GPStarAPI.Invoices;
 using GPStarAPI.Models;
+using GPStarAPI.Helpers;
+using GPStarAPI.Errors;
 
 namespace GPStarAPI.Controllers
 {
@@ -51,9 +53,8 @@ namespace GPStarAPI.Controllers
                 return BadRequest();
             }
 
-            await _invoiceSystem.UpdateInvoice(id, invoicePut);
-
-            return Ok(id);
+            var result = await _invoiceSystem.UpdateInvoice(id, invoicePut);
+            return ApiResult(result);
         }
 
         // POST: api/Invoices
@@ -64,6 +65,28 @@ namespace GPStarAPI.Controllers
             var id = await _invoiceSystem.CreateInvoice(invoicePost);
 
             return CreatedAtAction("GetInvoice", new { id = id }, id);
+        }
+
+        private ActionResult ApiResult(AppResult result)
+        {
+            if (result.Result)
+            {
+                return Ok(result.Result);
+            }
+
+            var errors = string.Join(",", result.Errors.Select(e => e.Message));
+            if (result.ErrorType != null)
+            {
+                switch (result.ErrorType)
+                {
+                    case ErrorType.NotFound:
+                        return NotFound(errors);
+                    case ErrorType.ArgumentException:
+                        return BadRequest(errors);
+                }
+            }
+
+            return BadRequest(errors ?? "Something went wrong");
         }
     }
 }
