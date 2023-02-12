@@ -76,6 +76,11 @@ namespace GPStarAPI.Invoices
 
         private AppResult<Guid> ValidatePosttLines(List<InvoiceLinePost> postLines, decimal invoiceTotal)
         {
+            if (!postLines.Any())
+            {
+                return AppResult<Guid>.Fail(new ErrorModel { Message = "Atleast require one invoice line", ErrorType = ErrorType.ArgumentException });
+            }
+
             // Amount, Quantity and Total calculations 
             var errors = new List<ErrorModel>();
             foreach (var posttLine in postLines)

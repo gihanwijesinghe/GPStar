@@ -133,6 +133,17 @@ namespace GPStarAPI.Invoices.Tests
             Assert.AreEqual(expectedErrorMessage, errorMessage);
         }
 
+        public void ValidateInvoiceLineCount()
+        {
+            var validator = new InvoiceValidator();
+
+            var linePuts = new List<ApiModels.InvoiceLinePut>();
+
+            var result = validator.ValidatePut(new Invoice { }, new InvoicePut { InvoiceLinePuts = linePuts }, null);
+
+            Assert.AreEqual(result.Errors[0].Message, "Atleast require one invoice line");
+        }
+
         [TestMethod()]
         public async Task ValidateInvoiceRouteIdAndPutId()
         {
