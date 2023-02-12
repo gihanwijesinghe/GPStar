@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using GPStarAPI.Data;
 using GPStarAPI.ApiModels;
 using GPStarAPI.Invoices;
 using GPStarAPI.Helpers;
@@ -11,12 +10,10 @@ namespace GPStarAPI.Controllers
     [ApiController]
     public class InvoicesController : ControllerBase
     {
-        private readonly GPStarContext _context;
         private readonly InvoiceSystem _invoiceSystem;
 
-        public InvoicesController(GPStarContext context, InvoiceSystem invoiceSystem)
+        public InvoicesController(InvoiceSystem invoiceSystem)
         {
-            _context = context;
             _invoiceSystem = invoiceSystem;
         }
 
