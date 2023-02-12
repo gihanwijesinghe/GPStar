@@ -18,6 +18,33 @@ namespace GPStarAPI.Invoices
             _invoiceValidator = invoiceValidator;
         }
 
+        public async Task<InvoiceGet> GetInvoiceById(Guid invoiceId)
+        {
+            var lines = await _context.InvoiceLines.Where(line => line.InvoiceId == invoiceId).Select(line => new InvoiceLineGet
+            {
+                Id = line.Id,
+                Name = line.Name,
+                Quantity = line.Quantity,
+                UnitPrice = line.UnitPrice,
+                LinePrice = line.LinePrice,
+            }).ToListAsync();
+
+            var invoice = await _context.Invoices.Where(invoice => invoice.Id == invoiceId).Select(invoice => new InvoiceGet
+            {
+                Id = invoice.Id,
+                Date = invoice.Date,
+                TotalAmount = invoice.TotalAmount,
+                Description = invoice.Description,
+                InvoiceLinePuts = lines
+            }).FirstOrDefaultAsync();
+
+            if (invoice == null)
+            {
+                throw new Exception("sd");
+            }
+            return invoice;
+        }
+
         public async Task<AppResult<Guid>> CreateInvoice(InvoicePost invoicePost)
         {
             var result = _invoiceValidator.ValidatePost(invoicePost);

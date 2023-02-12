@@ -17,6 +17,27 @@ namespace GPStarAPI.Controllers
             _invoiceSystem = invoiceSystem;
         }
 
+        //// GET: api/Invoices
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoice()
+        //{
+        //    return await _context.Invoices.ToListAsync();
+        //}
+
+        // GET: api/Invoices/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<InvoiceGet>> GetInvoice(Guid id)
+        {
+            var invoice = await _invoiceSystem.GetInvoiceById(id);
+
+            if (invoice == null)
+            {
+                return NotFound();
+            }
+
+            return invoice;
+        }
+
         // PUT: api/Invoices/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutInvoice(Guid id, InvoicePut invoicePut)
