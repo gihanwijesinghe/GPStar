@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using GPStarAPI.Data;
 using GPStarAPI.ApiModels;
 using GPStarAPI.Invoices;
-using GPStarAPI.Models;
 using GPStarAPI.Helpers;
 using GPStarAPI.Errors;
 
@@ -22,29 +20,7 @@ namespace GPStarAPI.Controllers
             _invoiceSystem = invoiceSystem;
         }
 
-        // GET: api/Invoices
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoice()
-        {
-            return await _context.Invoices.ToListAsync();
-        }
-
-        // GET: api/Invoices/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<InvoiceGet>> GetInvoice(Guid id)
-        {
-            var invoice = await _invoiceSystem.GetInvoiceById(id);
-
-            if (invoice == null)
-            {
-                return NotFound();
-            }
-
-            return invoice;
-        }
-
         // PUT: api/Invoices/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutInvoice(Guid id, InvoicePut invoicePut)
         {
@@ -53,7 +29,6 @@ namespace GPStarAPI.Controllers
         }
 
         // POST: api/Invoices
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Guid>> PostInvoice(InvoicePost invoicePost)
         {
