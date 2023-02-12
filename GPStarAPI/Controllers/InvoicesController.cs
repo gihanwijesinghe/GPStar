@@ -62,11 +62,11 @@ namespace GPStarAPI.Controllers
             return CreatedAtAction("GetInvoice", new { id = id }, id);
         }
 
-        private ActionResult ApiResult(AppResult result)
+        private ActionResult ApiResult<T>(AppResult<T> result)
         {
             if (result.Result)
             {
-                return Ok(result.Result);
+                return Ok(result.Data);
             }
 
             var errors = string.Join(",", result.Errors.Select(e => e.Message));

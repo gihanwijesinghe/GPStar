@@ -83,7 +83,9 @@ namespace GPStarAPI.Invoices
             }
 
             var invoiceDb = await _context.Invoices.FirstOrDefaultAsync(invoice => invoice.Id == invoiceId);
-            var result = _invoiceValidator.Validate(invoiceDb, invoicePut);
+            var dbLines = await _context.InvoiceLines.Where(line => line.InvoiceId == invoiceId).ToListAsync();
+
+            var result = _invoiceValidator.Validate(invoiceDb, invoicePut, dbLines);
 
             if (!result.Result)
             {
@@ -92,8 +94,6 @@ namespace GPStarAPI.Invoices
 
             invoiceDb.TotalAmount = invoicePut.TotalAmount;
             invoiceDb.Date = invoicePut.Date;
-
-            var dbLines = await _context.InvoiceLines.Where(line => line.InvoiceId == invoiceId).ToListAsync();
 
             MergeInvoiceLines(invoiceId, dbLines, invoicePut);
 
