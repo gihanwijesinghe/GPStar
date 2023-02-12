@@ -57,9 +57,8 @@ namespace GPStarAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Guid>> PostInvoice(InvoicePost invoicePost)
         {
-            var id = await _invoiceSystem.CreateInvoice(invoicePost);
-
-            return CreatedAtAction("GetInvoice", new { id = id }, id);
+            var result = await _invoiceSystem.CreateInvoice(invoicePost);
+            return ApiResult(result);
         }
 
         private ActionResult ApiResult<T>(AppResult<T> result)

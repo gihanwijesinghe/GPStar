@@ -44,12 +44,19 @@ namespace GPStarAPI.Invoices
             return invoice;
         }
 
-        public async Task<Guid> CreateInvoice(InvoicePost invoicePost)
+        public async Task<AppResult<Guid>> CreateInvoice(InvoicePost invoicePost)
         {
+            var result = _invoiceValidator.ValidatePost(invoicePost);
+            if (!result.Result)
+            {
+                return result;
+            }
+
             var invoiceDb = new Models.Invoice
             {
                 Date = invoicePost.Date,
                 TotalAmount = invoicePost.TotalAmount,
+                Description = invoicePost.Description,
                 InvoiceLines = invoicePost.InvoiceLinePosts.Select(line => new InvoiceLine
                 {
                     Name = line.Name,
@@ -64,7 +71,7 @@ namespace GPStarAPI.Invoices
             try
             {
                 await _context.SaveChangesAsync();
-                return invoiceDb.Id;
+                return AppResult<Guid>.Value(invoiceDb.Id);
             }
             catch (DbUpdateException)
             {
@@ -85,7 +92,7 @@ namespace GPStarAPI.Invoices
             var invoiceDb = await _context.Invoices.FirstOrDefaultAsync(invoice => invoice.Id == invoiceId);
             var dbLines = await _context.InvoiceLines.Where(line => line.InvoiceId == invoiceId).ToListAsync();
 
-            var result = _invoiceValidator.Validate(invoiceDb, invoicePut, dbLines);
+            var result = _invoiceValidator.ValidatePut(invoiceDb, invoicePut, dbLines);
 
             if (!result.Result)
             {
@@ -94,6 +101,7 @@ namespace GPStarAPI.Invoices
 
             invoiceDb.TotalAmount = invoicePut.TotalAmount;
             invoiceDb.Date = invoicePut.Date;
+            invoiceDb.Description = invoicePut.Description;
 
             MergeInvoiceLines(invoiceId, dbLines, invoicePut);
 

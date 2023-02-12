@@ -16,7 +16,7 @@ namespace GPStarAPI.Invoices.Tests
         {
 
             var validator = new InvoiceValidator();
-            var result = validator.Validate(null, null, null);
+            var result = validator.ValidatePut(null, null, null);
 
             Assert.AreEqual(result.Errors[0].Message, "invoice not found");
         }
@@ -26,7 +26,7 @@ namespace GPStarAPI.Invoices.Tests
         {
 
             var validator = new InvoiceValidator();
-            var result = validator.Validate(new Models.Invoice { }, null, null);
+            var result = validator.ValidatePut(new Models.Invoice { }, null, null);
 
             Assert.AreEqual(result.Errors[0].Message, "invoice put modal not found");
         }
@@ -46,7 +46,7 @@ namespace GPStarAPI.Invoices.Tests
             var notExitingLineIds = linePuts.Where(putLine => putLine.Id != null).Select(putLine => putLine.Id);
             var message = string.Join(", ", notExitingLineIds);
 
-            var result = validator.Validate(new Invoice { }, new InvoicePut { InvoiceLinePuts = new List<InvoiceLinePut>(linePuts) }, null);
+            var result = validator.ValidatePut(new Invoice { }, new InvoicePut { InvoiceLinePuts = new List<InvoiceLinePut>(linePuts) }, null);
 
             Assert.AreEqual(result.Errors[0].Message, "No invoice line found for ids: " + message);
         }
@@ -72,7 +72,7 @@ namespace GPStarAPI.Invoices.Tests
             var notExitingLineIds = linePuts.Where(putLine => putLine.Id != null).Select(putLine => putLine.Id);
             var message = string.Join(", ", notExitingLineIds);
 
-            var result = validator.Validate(new Invoice { }, new InvoicePut { InvoiceLinePuts = linePuts }, dblines);
+            var result = validator.ValidatePut(new Invoice { }, new InvoicePut { InvoiceLinePuts = linePuts }, dblines);
 
             Assert.AreEqual(result.Errors[0].Message, "No invoice line found for ids: " + message);
         }
@@ -95,7 +95,7 @@ namespace GPStarAPI.Invoices.Tests
                 new ApiModels.InvoiceLinePut { },
             };
 
-            var result = validator.Validate(new Invoice { }, new InvoicePut { InvoiceLinePuts = linePuts }, dblines);
+            var result = validator.ValidatePut(new Invoice { }, new InvoicePut { InvoiceLinePuts = linePuts }, dblines);
 
             Assert.AreEqual(result.Errors[0].Message, "duplicate put lines exists");
         }
@@ -111,7 +111,7 @@ namespace GPStarAPI.Invoices.Tests
                 new InvoiceLinePut { LinePrice = 300 },
             };
 
-            var result = validator.Validate(new Invoice { }, new InvoicePut { InvoiceLinePuts = linePuts }, null);
+            var result = validator.ValidatePut(new Invoice { }, new InvoicePut { InvoiceLinePuts = linePuts }, null);
 
             Assert.AreEqual(result.Errors[0].Message, "Line total not equal to invoice sum");
         }
@@ -127,7 +127,7 @@ namespace GPStarAPI.Invoices.Tests
             };
 
             var expectedErrorMessage = string.Join(", ", linePuts.Select(linePut => linePut.Name + " line sum not aligned with quatity and unit Price"));
-            var result = validator.Validate(new Invoice { }, new InvoicePut { InvoiceLinePuts = linePuts }, null);
+            var result = validator.ValidatePut(new Invoice { }, new InvoicePut { InvoiceLinePuts = linePuts }, null);
             var errorMessage = string.Join(", ", result.Errors);
 
             Assert.AreEqual(expectedErrorMessage, errorMessage);
