@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GPStarAPI\GPStarAPI.csproj" />
+    <ProjectReference Include="..\GPStarAPI\GPStar.API.csproj" />
   </ItemGroup>
 
 </Project>

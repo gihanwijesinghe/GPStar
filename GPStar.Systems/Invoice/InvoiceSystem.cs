@@ -1,11 +1,10 @@
-﻿using GPStarAPI.ApiModels;
-using GPStarAPI.Data;
-using GPStarAPI.Errors;
-using GPStarAPI.Helpers;
-using GPStarAPI.Models;
+﻿using GPStar.Contracts.Invoice;
+using GPStar.Contracts.InvoiceLine;
+using GPStar.Model;
+using GPStar.Utils;
 using Microsoft.EntityFrameworkCore;
 
-namespace GPStarAPI.Invoices
+namespace GPStar.Systems.Invoices
 {
     public class InvoiceSystem
     {
@@ -53,7 +52,7 @@ namespace GPStarAPI.Invoices
                 return result;
             }
 
-            var invoiceDb = new Models.Invoice
+            var invoiceDb = new Invoice
             {
                 Date = invoicePost.Date,
                 TotalAmount = invoicePost.TotalAmount,

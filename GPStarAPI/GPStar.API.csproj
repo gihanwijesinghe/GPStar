@@ -19,4 +19,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GPStar.Contracts\GPStar.Contracts.csproj" />
+    <ProjectReference Include="..\GPStar.Systems\GPStar.Systems.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GPStarAPI.Models;
-using GPStarAPI.ApiModels;
+using GPStar.Contracts.InvoiceLine;
+using GPStar.Contracts.Invoice;
+using GPStar.Systems.Invoices;
+using GPStar.Model;
 
 namespace GPStarAPI.Invoices.Tests
 {
@@ -26,7 +28,7 @@ namespace GPStarAPI.Invoices.Tests
         {
 
             var validator = new InvoiceValidator();
-            var result = validator.ValidatePut(new Models.Invoice { }, null, null);
+            var result = validator.ValidatePut(new Invoice { }, null, null);
 
             Assert.AreEqual(result.Errors[0].Message, "invoice put modal not found");
         }
@@ -36,11 +38,11 @@ namespace GPStarAPI.Invoices.Tests
         {
 
             var validator = new InvoiceValidator();
-            var linePuts = new List<ApiModels.InvoiceLinePut>()
+            var linePuts = new List<InvoiceLinePut>()
             {
-                new ApiModels.InvoiceLinePut { Id = new Guid("d3528351-e405-4352-9266-1f3145652360") },
-                new ApiModels.InvoiceLinePut { Id = new Guid("d3528351-e405-4352-9266-1f3145652555") },
-                new ApiModels.InvoiceLinePut { },
+                new InvoiceLinePut { Id = new Guid("d3528351-e405-4352-9266-1f3145652360") },
+                new InvoiceLinePut { Id = new Guid("d3528351-e405-4352-9266-1f3145652555") },
+                new InvoiceLinePut { },
             };
 
             var notExitingLineIds = linePuts.Where(putLine => putLine.Id != null).Select(putLine => putLine.Id);
@@ -62,11 +64,11 @@ namespace GPStarAPI.Invoices.Tests
                 new InvoiceLine { Id = new Guid("d3528351-e405-4352-9266-1f3145652222") },
             };
 
-            var linePuts = new List<ApiModels.InvoiceLinePut>()
+            var linePuts = new List<InvoiceLinePut>()
             {
-                new ApiModels.InvoiceLinePut { Id = new Guid("d3528351-e405-4352-9266-1f3145652360") },
-                new ApiModels.InvoiceLinePut { Id = new Guid("d3528351-e405-4352-9266-1f3145652555") },
-                new ApiModels.InvoiceLinePut { },
+                new InvoiceLinePut { Id = new Guid("d3528351-e405-4352-9266-1f3145652360") },
+                new InvoiceLinePut { Id = new Guid("d3528351-e405-4352-9266-1f3145652555") },
+                new InvoiceLinePut { },
             };
 
             var notExitingLineIds = linePuts.Where(putLine => putLine.Id != null).Select(putLine => putLine.Id);
@@ -88,11 +90,11 @@ namespace GPStarAPI.Invoices.Tests
                 new InvoiceLine { Id = new Guid("d3528351-e405-4352-9266-1f3145652222") },
             };
 
-            var linePuts = new List<ApiModels.InvoiceLinePut>()
+            var linePuts = new List<InvoiceLinePut>()
             {
-                new ApiModels.InvoiceLinePut { Id = new Guid("d3528351-e405-4352-9266-1f3145651111") },
-                new ApiModels.InvoiceLinePut { Id = new Guid("d3528351-e405-4352-9266-1f3145651111") },
-                new ApiModels.InvoiceLinePut { },
+                new InvoiceLinePut { Id = new Guid("d3528351-e405-4352-9266-1f3145651111") },
+                new InvoiceLinePut { Id = new Guid("d3528351-e405-4352-9266-1f3145651111") },
+                new InvoiceLinePut { },
             };
 
             var result = validator.ValidatePut(new Invoice { }, new InvoicePut { InvoiceLinePuts = linePuts }, dblines);
@@ -105,7 +107,7 @@ namespace GPStarAPI.Invoices.Tests
 
             var validator = new InvoiceValidator();
 
-            var linePuts = new List<ApiModels.InvoiceLinePut>()
+            var linePuts = new List<InvoiceLinePut>()
             {
                 new InvoiceLinePut { LinePrice = 100 },
                 new InvoiceLinePut { LinePrice = 300 },
@@ -120,7 +122,7 @@ namespace GPStarAPI.Invoices.Tests
         {
             var validator = new InvoiceValidator();
 
-            var linePuts = new List<ApiModels.InvoiceLinePut>()
+            var linePuts = new List<InvoiceLinePut>()
             {
                 new InvoiceLinePut { LinePrice = 100, Quantity = 2, UnitPrice = 100, Name = "Line 1" },
                 new InvoiceLinePut { LinePrice = 300, Quantity = 3, UnitPrice = 50, Name = "line 2" },
@@ -137,7 +139,7 @@ namespace GPStarAPI.Invoices.Tests
         {
             var validator = new InvoiceValidator();
 
-            var linePuts = new List<ApiModels.InvoiceLinePut>();
+            var linePuts = new List<InvoiceLinePut>();
 
             var result = validator.ValidatePut(new Invoice { }, new InvoicePut { InvoiceLinePuts = linePuts }, null);
 
@@ -149,7 +151,7 @@ namespace GPStarAPI.Invoices.Tests
         {
             var invoiceId1 = new Guid("d3528351-e405-4352-9266-1f3145652360");
             var invoiceSystem = new InvoiceSystem(null, null);
-            var result = await invoiceSystem.UpdateInvoice(invoiceId1, new ApiModels.InvoicePut { Id = Guid.NewGuid() });
+            var result = await invoiceSystem.UpdateInvoice(invoiceId1, new InvoicePut { Id = Guid.NewGuid() });
 
             Assert.AreEqual(result.Errors[0].Message, "invoice route id and modal id not equal");
         }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using GPStarAPI.Data;
 using System.Text.Json.Serialization;
-using GPStarAPI.Invoices;
+using GPStar.Systems.Invoices;
+using GPStar.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.

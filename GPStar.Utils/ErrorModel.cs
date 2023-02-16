@@ -1,4 +1,4 @@
-﻿namespace GPStarAPI.Errors
+﻿namespace GPStar.Utils
 {
     public class ErrorModel
     {

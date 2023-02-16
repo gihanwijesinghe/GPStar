@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace GPStarAPI.Models
+namespace GPStar.Model
 {
     public class Invoice
     {

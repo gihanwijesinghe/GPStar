@@ -1,6 +1,4 @@
-﻿using GPStarAPI.Models;
-
-namespace GPStarAPI.ApiModels
+﻿namespace GPStar.Contracts.InvoiceLine
 {
     public class InvoiceLinePost
     {
@@ -8,15 +6,5 @@ namespace GPStarAPI.ApiModels
         public decimal Quantity { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal LinePrice { get; set; }
-    }
-
-    public class InvoiceLinePut : InvoiceLinePost
-    {
-        public Guid? Id { get; set; }
-    }
-
-    public class InvoiceLineGet : InvoiceLinePut
-    {
-
     }
 }

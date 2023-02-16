@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using GPStarAPI.ApiModels;
-using GPStarAPI.Invoices;
-using GPStarAPI.Helpers;
-using GPStarAPI.Errors;
+using GPStar.Contracts.Invoice;
+using GPStar.Systems.Invoices;
+using GPStar.Utils;
 
-namespace GPStarAPI.Controllers
+namespace GPStar.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

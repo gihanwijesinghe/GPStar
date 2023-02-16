@@ -1,9 +1,9 @@
-﻿using GPStarAPI.ApiModels;
-using GPStarAPI.Errors;
-using GPStarAPI.Helpers;
-using GPStarAPI.Models;
+﻿using GPStar.Contracts.Invoice;
+using GPStar.Contracts.InvoiceLine;
+using GPStar.Model;
+using GPStar.Utils;
 
-namespace GPStarAPI.Invoices
+namespace GPStar.Systems.Invoices
 {
     public class InvoiceValidator
     {
@@ -20,7 +20,7 @@ namespace GPStarAPI.Invoices
             return AppResult<Guid>.Success;
         }
 
-        public AppResult<Guid> ValidatePut(Models.Invoice invoiceDb, InvoicePut invoicePut, List<InvoiceLine> invoiceLines)
+        public AppResult<Guid> ValidatePut(Invoice invoiceDb, InvoicePut invoicePut, List<InvoiceLine> invoiceLines)
         {
             // Null Check validations
             if (invoiceDb == null)

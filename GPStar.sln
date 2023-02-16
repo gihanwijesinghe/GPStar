@@ -3,9 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GPStarAPI", "GPStarAPI\GPStarAPI.csproj", "{FE2AD9CD-E2C0-4CBF-9F6C-6A5A957DE0D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GPStar.API", "GPStarAPI\GPStar.API.csproj", "{FE2AD9CD-E2C0-4CBF-9F6C-6A5A957DE0D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GPStarAPITests", "GPStarAPITests\GPStarAPITests.csproj", "{5203EFBB-FB5E-4713-9858-3D291E7FAAC0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GPStarAPITests", "GPStarAPITests\GPStarAPITests.csproj", "{5203EFBB-FB5E-4713-9858-3D291E7FAAC0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GPStar.Contracts", "GPStar.Contracts\GPStar.Contracts.csproj", "{8FE3874C-B269-4FD3-AC37-CEFD1C530A9C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GPStar.Systems", "GPStar.Systems\GPStar.Systems.csproj", "{FDE68CB8-AFEE-4B81-8ADA-AC4B68744B84}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GPStar.Model", "GPStar.Model\GPStar.Model.csproj", "{51C3D9FF-5A04-4D13-93A6-051892FF3ACC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GPStar.Utils", "GPStar.Utils\GPStar.Utils.csproj", "{A8B034AB-4202-44E3-B451-E3C6126078E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +29,22 @@ Global
 		{5203EFBB-FB5E-4713-9858-3D291E7FAAC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5203EFBB-FB5E-4713-9858-3D291E7FAAC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5203EFBB-FB5E-4713-9858-3D291E7FAAC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FE3874C-B269-4FD3-AC37-CEFD1C530A9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FE3874C-B269-4FD3-AC37-CEFD1C530A9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FE3874C-B269-4FD3-AC37-CEFD1C530A9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FE3874C-B269-4FD3-AC37-CEFD1C530A9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDE68CB8-AFEE-4B81-8ADA-AC4B68744B84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDE68CB8-AFEE-4B81-8ADA-AC4B68744B84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDE68CB8-AFEE-4B81-8ADA-AC4B68744B84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDE68CB8-AFEE-4B81-8ADA-AC4B68744B84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51C3D9FF-5A04-4D13-93A6-051892FF3ACC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51C3D9FF-5A04-4D13-93A6-051892FF3ACC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51C3D9FF-5A04-4D13-93A6-051892FF3ACC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51C3D9FF-5A04-4D13-93A6-051892FF3ACC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8B034AB-4202-44E3-B451-E3C6126078E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8B034AB-4202-44E3-B451-E3C6126078E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8B034AB-4202-44E3-B451-E3C6126078E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8B034AB-4202-44E3-B451-E3C6126078E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,16 +1,14 @@
-﻿using GPStarAPI.Errors;
-
-namespace GPStarAPI.Helpers
+﻿namespace GPStar.Utils
 {
     public class AppResult
     {
         public bool _result { get; set; }
         public List<ErrorModel> Errors { get; set; }
-        
+
         public ErrorType _errorType { get; set; }
 
         public bool Result { get { return _result; } }
-        
+
 
         public ErrorType? ErrorType { get { return _errorType; } }
 
@@ -25,7 +23,7 @@ namespace GPStarAPI.Helpers
 
         public static AppResult<T> Fail(List<ErrorModel> errors)
         {
-            return new AppResult<T> { _result = false, Errors = errors};
+            return new AppResult<T> { _result = false, Errors = errors };
         }
 
         public static AppResult<T> Fail(ErrorModel error)
@@ -35,7 +33,7 @@ namespace GPStarAPI.Helpers
 
         public static AppResult<T> Value(T value)
         {
-            return new AppResult<T> {_result = true, _data = value};
+            return new AppResult<T> { _result = true, _data = value };
         }
     }
 }
