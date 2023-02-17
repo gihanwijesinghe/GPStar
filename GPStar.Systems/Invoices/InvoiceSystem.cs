@@ -17,34 +17,6 @@ namespace GPStar.Systems.Invoices
             _invoiceService = invoiceService;
         }
 
-        public async Task<InvoiceGet> GetInvoiceById(Guid invoiceId)
-        {
-            var invoiceDb = await _invoiceService.GetAsync(invoiceId.ToString());
-
-            if (invoiceDb == null)
-            {
-                throw new Exception("Not found");
-            }
-
-            var invoiceGet = new InvoiceGet
-            {
-                Id = invoiceDb.Id,
-                Date = invoiceDb.Date,
-                TotalAmount = invoiceDb.TotalAmount,
-                Description = invoiceDb.Description,
-                InvoiceLinePuts = invoiceDb.InvoiceLines.Select(line => new InvoiceLineGet
-                {
-                    Id = line.Id,
-                    Name = line.Name,
-                    Quantity = line.Quantity,
-                    UnitPrice = line.UnitPrice,
-                    LinePrice = line.LinePrice,
-                })
-            };
-
-            return invoiceGet;
-        }
-
         public async Task<AppResult<Guid>> CreateInvoice(InvoicePost invoicePost)
         {
             var result = _invoiceValidator.ValidatePost(invoicePost);
