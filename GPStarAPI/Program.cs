@@ -2,14 +2,14 @@
 using System.Text.Json.Serialization;
 using GPStar.Systems.Invoices;
 using GPStar.Model;
+using GPStar.Services.Invoices;
+using GPStar.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
+builder.Services.AddSingleton<IInvoiceService>(InvoiceCosmosClient.InitializeCosmosClientInstanceAsync(builder.Configuration.GetSection("AzureCosmosDbSettings")).GetAwaiter().GetResult());
 
-builder.Services.AddDbContext<GPStarContext>(options =>
-    options.UseCosmos(builder.Configuration["CosmosDBGPStar"],
-    databaseName: "GPStar"));
 
 builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
@@ -28,9 +28,9 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    await using var scope = app.Services?.GetService<IServiceScopeFactory>()?.CreateAsyncScope();
-    var context = scope?.ServiceProvider.GetRequiredService<GPStarContext>();
-    var result = await context!.Database.EnsureCreatedAsync();
+    //await using var scope = app.Services?.GetService<IServiceScopeFactory>()?.CreateAsyncScope();
+    //var context = scope?.ServiceProvider.GetRequiredService<GPStarContext>();
+    //var result = await context!.Database.EnsureCreatedAsync();
 
     app.UseSwagger();
     app.UseSwaggerUI();

@@ -23,7 +23,7 @@ namespace GPStar.API.Controllers
         //    return await _context.Invoices.ToListAsync();
         //}
 
-        // GET: api/Invoices/5
+        //GET: api/Invoices/5
         [HttpGet("{id}")]
         public async Task<ActionResult<InvoiceGet>> GetInvoice(Guid id)
         {

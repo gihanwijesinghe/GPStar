@@ -1,47 +1,48 @@
 ﻿using GPStar.Contracts.Invoice;
 using GPStar.Contracts.InvoiceLine;
 using GPStar.Model;
+using GPStar.Services.Invoices;
 using GPStar.Utils;
-using Microsoft.EntityFrameworkCore;
 
 namespace GPStar.Systems.Invoices
 {
     public class InvoiceSystem
     {
-        private readonly GPStarContext _context;
         private readonly InvoiceValidator _invoiceValidator;
+        private readonly IInvoiceService _invoiceService;
 
-        public InvoiceSystem(GPStarContext context, InvoiceValidator invoiceValidator)
+        public InvoiceSystem(InvoiceValidator invoiceValidator, IInvoiceService invoiceService)
         {
-            _context = context;
             _invoiceValidator = invoiceValidator;
+            _invoiceService = invoiceService;
         }
 
         public async Task<InvoiceGet> GetInvoiceById(Guid invoiceId)
         {
-            var lines = await _context.InvoiceLines.Where(line => line.InvoiceId == invoiceId).Select(line => new InvoiceLineGet
-            {
-                Id = line.Id,
-                Name = line.Name,
-                Quantity = line.Quantity,
-                UnitPrice = line.UnitPrice,
-                LinePrice = line.LinePrice,
-            }).ToListAsync();
+            var invoiceDb = await _invoiceService.GetAsync(invoiceId.ToString());
 
-            var invoice = await _context.Invoices.Where(invoice => invoice.Id == invoiceId).Select(invoice => new InvoiceGet
+            if (invoiceDb == null)
             {
-                Id = invoice.Id,
-                Date = invoice.Date,
-                TotalAmount = invoice.TotalAmount,
-                Description = invoice.Description,
-                InvoiceLinePuts = lines
-            }).FirstOrDefaultAsync();
-
-            if (invoice == null)
-            {
-                throw new Exception("sd");
+                throw new Exception("Not found");
             }
-            return invoice;
+
+            var invoiceGet = new InvoiceGet
+            {
+                Id = invoiceDb.Id,
+                Date = invoiceDb.Date,
+                TotalAmount = invoiceDb.TotalAmount,
+                Description = invoiceDb.Description,
+                InvoiceLinePuts = invoiceDb.InvoiceLines.Select(line => new InvoiceLineGet
+                {
+                    Id = line.Id,
+                    Name = line.Name,
+                    Quantity = line.Quantity,
+                    UnitPrice = line.UnitPrice,
+                    LinePrice = line.LinePrice,
+                })
+            };
+
+            return invoiceGet;
         }
 
         public async Task<AppResult<Guid>> CreateInvoice(InvoicePost invoicePost)
@@ -63,19 +64,17 @@ namespace GPStar.Systems.Invoices
                     Quantity = line.Quantity,
                     UnitPrice = line.UnitPrice,
                     LinePrice = line.LinePrice
-                }).ToList()
+                }).ToArray()
             };
-
-            _context.Invoices.Add(invoiceDb);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _invoiceService.AddAsync(invoiceDb);
                 return AppResult<Guid>.Value(invoiceDb.Id);
             }
-            catch (DbUpdateException)
+            catch (Exception ex)
             {
-                throw;
+                return AppResult<Guid>.Fail(new ErrorModel { Message = "DB exception"});
             }
         }
 
@@ -83,14 +82,15 @@ namespace GPStar.Systems.Invoices
         {
             if (invoiceId != invoicePut.Id)
             {
-                return AppResult<Guid>.Fail(new ErrorModel { 
-                    Message = "invoice route id and modal id not equal", 
-                    ErrorType = ErrorType.ArgumentException 
+                return AppResult<Guid>.Fail(new ErrorModel
+                {
+                    Message = "invoice route id and modal id not equal",
+                    ErrorType = ErrorType.ArgumentException
                 });
             }
 
-            var invoiceDb = await _context.Invoices.FirstOrDefaultAsync(invoice => invoice.Id == invoiceId);
-            var dbLines = await _context.InvoiceLines.Where(line => line.InvoiceId == invoiceId).ToListAsync();
+            var invoiceDb = await _invoiceService.GetAsync(invoiceId.ToString());
+            var dbLines = invoiceDb.InvoiceLines.ToList();
 
             var result = _invoiceValidator.ValidatePut(invoiceDb, invoicePut, dbLines);
 
@@ -98,20 +98,21 @@ namespace GPStar.Systems.Invoices
             {
                 return result;
             }
+            var updatedLines = MergeInvoiceLines(invoiceId, dbLines, invoicePut);
 
             invoiceDb.TotalAmount = invoicePut.TotalAmount;
             invoiceDb.Date = invoicePut.Date;
             invoiceDb.Description = invoicePut.Description;
-
-            MergeInvoiceLines(invoiceId, dbLines, invoicePut);
+            invoiceDb.InvoiceLines = updatedLines.ToArray();
+            
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _invoiceService.UpdateAsync(invoiceId.ToString(), invoiceDb);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception e)
             {
-                throw new Exception("data base update issue");
+                return AppResult<Guid>.Fail(new ErrorModel { Message = "DB exception: " + e.Message });
             }
 
             return AppResult<Guid>.Value(invoiceId);
@@ -119,45 +120,46 @@ namespace GPStar.Systems.Invoices
 
         private IList<InvoiceLine> MergeInvoiceLines(Guid invoiceId, List<InvoiceLine> invoiceDbLines, InvoicePut invoicePut)
         {
-            RemoveInvoiceLines(invoiceDbLines, invoicePut.InvoiceLinePuts.ToList());
-            UpdateInvoiceLines(invoiceDbLines, invoicePut.InvoiceLinePuts.ToList());
-            AddInvoiceLines(invoiceId, invoiceDbLines, invoicePut.InvoiceLinePuts.ToList());
+            invoiceDbLines = RemoveInvoiceLines(invoiceDbLines, invoicePut.InvoiceLinePuts.ToList());
+            invoiceDbLines = UpdateInvoiceLines(invoiceDbLines, invoicePut.InvoiceLinePuts.ToList());
+            invoiceDbLines = AddInvoiceLines(invoiceId, invoiceDbLines, invoicePut.InvoiceLinePuts.ToList());
 
             return invoiceDbLines;
         }
 
-        private void RemoveInvoiceLines(List<InvoiceLine> invoiceDbLines, List<InvoiceLinePut> invoiceLinePuts)
+        private List<InvoiceLine> RemoveInvoiceLines(List<InvoiceLine> invoiceDbLines, List<InvoiceLinePut> invoiceLinePuts)
         {
-            if(invoiceDbLines != null)
+            if (invoiceDbLines != null)
             {
                 var dbLineIds = invoiceDbLines.Select(line => line.Id).ToList();
                 foreach (var lineId in dbLineIds)
                 {
-                    if(invoiceLinePuts == null || !invoiceLinePuts.Any() || !invoiceLinePuts.Any(putLine => lineId == putLine.Id))
+                    if (invoiceLinePuts == null || !invoiceLinePuts.Any() || !invoiceLinePuts.Any(putLine => lineId == putLine.Id))
                     {
                         var line = invoiceDbLines.FirstOrDefault(l => l.Id == lineId);
                         invoiceDbLines.Remove(line);
-                        _context.InvoiceLines.Remove(line);
                     }
                 }
             }
+
+            return invoiceDbLines;
         }
 
-        private void UpdateInvoiceLines(List<InvoiceLine> invoiceDbLines, List<InvoiceLinePut> InvoiceLinePuts)
+        private List<InvoiceLine> UpdateInvoiceLines(List<InvoiceLine> invoiceDbLines, List<InvoiceLinePut> InvoiceLinePuts)
         {
-            if(invoiceDbLines == null || InvoiceLinePuts == null || !invoiceDbLines.Any() || !InvoiceLinePuts.Any())
+            if (invoiceDbLines == null || InvoiceLinePuts == null || !invoiceDbLines.Any() || !InvoiceLinePuts.Any())
             {
-                return;
+                return new List<InvoiceLine>();
             }
 
             var toUpdateLines = InvoiceLinePuts.Where(putLine => putLine.Id != null);
 
-            if(invoiceDbLines.Count() != toUpdateLines.Count())
+            if (invoiceDbLines.Count() != toUpdateLines.Count())
             {
                 throw new Exception("updated lines are not correct");
             }
 
-            foreach(var invoiceLine in invoiceDbLines)
+            foreach (var invoiceLine in invoiceDbLines)
             {
                 var toUpdateLine = toUpdateLines.Where(putLine => putLine.Id == invoiceLine.Id).FirstOrDefault();
                 invoiceLine.Name = toUpdateLine.Name;
@@ -165,24 +167,27 @@ namespace GPStar.Systems.Invoices
                 invoiceLine.Quantity = toUpdateLine.Quantity;
                 invoiceLine.LinePrice = toUpdateLine.LinePrice;
             }
+
+            return invoiceDbLines;
         }
 
-        private void AddInvoiceLines(Guid invoiceId, List<InvoiceLine> invoiceDbLines, List<InvoiceLinePut> invoiceLinePuts)
+        private List<InvoiceLine> AddInvoiceLines(Guid invoiceId, List<InvoiceLine> invoiceDbLines, List<InvoiceLinePut> invoiceLinePuts)
         {
             var newLines = invoiceLinePuts.Where((putLine) => putLine.Id == null);
 
-            foreach(var invoiceLine in newLines)
+            foreach (var invoiceLine in newLines)
             {
                 var lineDb = new InvoiceLine
                 {
                     Quantity = invoiceLine.Quantity,
                     Name = invoiceLine.Name,
                     UnitPrice = invoiceLine.UnitPrice,
-                    LinePrice = invoiceLine.LinePrice,
-                    InvoiceId = invoiceId,
+                    LinePrice = invoiceLine.LinePrice
                 };
-                _context.InvoiceLines.Add(lineDb);
+                invoiceDbLines.Add(lineDb);
             }
+
+            return invoiceDbLines;
         }
     }
 }

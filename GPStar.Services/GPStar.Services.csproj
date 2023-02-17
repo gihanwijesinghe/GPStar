@@ -7,9 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GPStar.Contracts\GPStar.Contracts.csproj" />
-    <ProjectReference Include="..\GPStar.Services\GPStar.Services.csproj" />
-    <ProjectReference Include="..\GPStar.Utils\GPStar.Utils.csproj" />
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.32.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GPStar.Model\GPStar.Model.csproj" />
   </ItemGroup>
 
 </Project>
